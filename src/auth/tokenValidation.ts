@@ -1,9 +1,9 @@
-import { getMongo } from "../persistence/mongo";
+import { getMongo } from "~/persistence/mongo";
 
 export default async function getUserFromToken(token: string) {
   const mongo = await getMongo("users");
 
-  const user = await mongo.collection.findOne({
+  const user = await mongo.collection?.findOne({
     "tokens.token": {
       $in: [token],
     },

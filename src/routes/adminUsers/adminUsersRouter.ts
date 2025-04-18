@@ -1,7 +1,7 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
 import { getMongo, stringToObjectId } from "~/persistence/mongo";
-import { stripDownToProps, stripOutProps, throwBadRequestIfMissingFields } from "~/utilities/apiUtilities";
+import { getCurrentUser, stripDownToProps, stripOutProps, throwBadRequestIfMissingFields } from "~/utilities/apiUtilities";
 import { hashPassword } from "~/utilities/passwordUtilities";
 import ApiError from "~/validation/ApiError";
 import ErrorTypes from "~/validation/ErrorTypes";
@@ -10,19 +10,19 @@ import IAppRouter from "../IAppRouter";
 const router = express.Router();
 
 // Ensure anyone accessing this router is an admin.
-// router.use("*", (_, res, next) => {
-//   if (!getCurrentUser(res).isAdmin) {
-//     throw new ApiError("Forbidden", ErrorTypes.Forbidden);
-//   }
+router.use("*", (_, res, next) => {
+  if (!getCurrentUser(res).isAdmin) {
+    throw new ApiError("Forbidden", ErrorTypes.Forbidden);
+  }
 
-//   next();
-// });
+  next();
+});
 
 // Get users.
 router.get("/", expressAsyncHandler(async (_, res) => {
   const mongo = await getMongo("users");
 
-  const users = await mongo.collection.find({}, {
+  const users = await mongo.collection?.find({}, {
     projection: {
       _id: 1,
       name: 1,
@@ -42,14 +42,14 @@ router.post("/", expressAsyncHandler(async (req, res) => {
 
   const mongo = await getMongo("users");
 
-  const existingUser = await mongo.collection.findOne({ email: { $regex: new RegExp("^" + newUser.email + "$", "i") } });
+  const existingUser = await mongo.collection?.findOne({ email: { $regex: new RegExp("^" + newUser.email + "$", "i") } });
 
   if (existingUser) {
     throw new ApiError(`User with email ${newUser.email} already exists.`, ErrorTypes.BadRequest);
   }
 
   const hashedPwd = hashPassword(newUser.passwordPlain);
-  await mongo.collection.insertOne({
+  await mongo.collection?.insertOne({
     email: newUser.email,
     name: newUser.name,
     password: hashedPwd,
@@ -69,13 +69,13 @@ router.put("/:id", expressAsyncHandler(async (req, res) => {
   const _id = stringToObjectId(req.params.id);
 
   const mongo = await getMongo("users");
-  const existingUser = await mongo.collection.findOne({ _id });
+  const existingUser = await mongo.collection?.findOne({ _id });
 
   if (!existingUser) {
     throw new ApiError(`User not found.`, ErrorTypes.NotFound);
   }
 
-  await mongo.collection.updateOne({ _id }, {
+  await mongo.collection?.updateOne({ _id }, {
     $set: {
       ...newProps,
     },
@@ -97,7 +97,7 @@ router.post("/:id/setPassword", expressAsyncHandler(async (req, res) => {
   const _id = stringToObjectId(req.params.id);
 
   const mongo = await getMongo("users");
-  const existingUser = await mongo.collection.findOne({ _id });
+  const existingUser = await mongo.collection?.findOne({ _id });
 
   if (!existingUser) {
     throw new ApiError(`User not found.`, ErrorTypes.NotFound);
@@ -105,7 +105,7 @@ router.post("/:id/setPassword", expressAsyncHandler(async (req, res) => {
 
   const hashedPwd = hashPassword(newPassword);
 
-  await mongo.collection.updateOne({ _id }, {
+  await mongo.collection?.updateOne({ _id }, {
     $set: {
       password: hashedPwd,
     },

@@ -1,8 +1,8 @@
 import { Response } from "express";
 import { cloneDeep } from "lodash";
-import ICurrentUser from "../auth/ICurrentUser";
-import ApiError from "../validation/ApiError";
-import ErrorTypes from "../validation/ErrorTypes";
+import ICurrentUser from "~/auth/ICurrentUser";
+import ApiError from "~/validation/ApiError";
+import ErrorTypes from "~/validation/ErrorTypes";
 
 export function getCurrentUser(response: Response<any, Record<string, any>>): ICurrentUser {
   return response.locals.user as ICurrentUser;

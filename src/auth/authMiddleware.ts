@@ -1,6 +1,6 @@
 import expressAsyncHandler from "express-async-handler";
-import ApiError from "../validation/ApiError";
-import ErrorTypes from "../validation/ErrorTypes";
+import ApiError from "~/validation/ApiError";
+import ErrorTypes from "~/validation/ErrorTypes";
 import getUserFromToken from "./tokenValidation";
 
 export default function configureAuthMiddleware(app: any, exposedRoutes: string[]) {

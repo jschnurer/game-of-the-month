@@ -25,7 +25,8 @@ export async function getMongo(collectionName?: string): Promise<IMongoHelper> {
 
   const db = client.db(settings.mongoDb.db);
 
-  if (!db.collection(collectionName)) {
+  if (collectionName
+    && !db.collection(collectionName)) {
     await db.createCollection(collectionName);
   }
 
@@ -54,7 +55,7 @@ export function stringToMongoFilter(str: string | undefined): Filter<WithId<Docu
   try {
     return JSON.parse(str, jsonRegexReviver);
   } catch (err) {
-    throw new ApiError(err.message, ErrorTypes.BadRequest);
+    throw new ApiError((err as any).message, ErrorTypes.BadRequest);
   }
 }
 
@@ -66,7 +67,7 @@ export function stringToMongoSort(str: string | undefined): Sort | undefined {
   try {
     return JSON.parse(str);
   } catch (err) {
-    throw new ApiError(err.message, ErrorTypes.BadRequest);
+    throw new ApiError((err as any).message, ErrorTypes.BadRequest);
   }
 }
 
