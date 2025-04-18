@@ -1,0 +1,4 @@
+{
+  "apiUrl": "http://localhost:8088/api",
+  "localStorageTokenName": "<YOUR TOKEN NAME>"
+}

@@ -1,0 +1,7 @@
+{
+  "mongoDb": {
+    "connectionString": "<YOUR CONNECTION STRING HERE>",
+    "db": "<YOUR DB NAME HERE>"
+  },
+  "port": 8088
+}
