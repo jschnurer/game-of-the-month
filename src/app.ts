@@ -5,6 +5,7 @@ import IAppRouter from "./routes/IAppRouter";
 import adminUsersRouter from "./routes/adminUsers/adminUsersRouter";
 import settings from "./settings/settings";
 import errorHandler from "./validation/errorHandler";
+import clubsRouter from "./routes/clubs/clubsRouter";
 
 const app = express();
 
@@ -18,6 +19,9 @@ app.use(json());
 
 // Add all routers here.
 useRouter(adminUsersRouter);
+useRouter(clubsRouter);
+
+console.log("added routers");
 
 // All other GET requests not handled before will return our React app.
 app.get("/{*splat}", (_, res) => {

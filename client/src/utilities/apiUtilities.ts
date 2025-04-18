@@ -1,3 +1,4 @@
+import settings from "~/settings/settings";
 import { isErrorValidationErrorResponse } from "./validationErrorHelpers";
 
 export async function throwIfResponseError(response: Response) {
@@ -58,4 +59,9 @@ export function encodeObjForUrl(obj: any) {
   }
 
   return encodeURIComponent(JSON.stringify(obj));
+}
+
+/** Combines the base api url with the path you specify. */
+export function getApiUrl(relativePath: string) {
+  return `${settings.apiUrl}/${relativePath}`;
 }

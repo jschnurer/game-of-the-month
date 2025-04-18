@@ -13,7 +13,7 @@ export function throwBadRequestIfMissingFields(obj: any, fields: string[]) {
     throw new ApiError("Invalid request.", ErrorTypes.BadRequest);
   }
 
-  const errors = fields.filter(x => obj[x] === null || obj[x] === undefined || obj[x] === '')
+  const errors = fields.filter(x => obj[x] === null || obj[x] === undefined || obj[x] === '' || !obj[x].toString().trim())
     .map(x => `The field '${x}' is required.`);
 
   if (errors.length) {
