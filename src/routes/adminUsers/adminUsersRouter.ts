@@ -1,10 +1,10 @@
 import express from "express";
 import expressAsyncHandler from "express-async-handler";
-import { getMongo, stringToObjectId } from "../../persistence/mongo";
-import { stripDownToProps, stripOutProps, throwBadRequestIfMissingFields } from "../../utilities/apiUtilities";
-import { hashPassword } from "../../utilities/passwordUtilities";
-import ApiError from "../../validation/ApiError";
-import ErrorTypes from "../../validation/ErrorTypes";
+import { getMongo, stringToObjectId } from "~/persistence/mongo";
+import { stripDownToProps, stripOutProps, throwBadRequestIfMissingFields } from "~/utilities/apiUtilities";
+import { hashPassword } from "~/utilities/passwordUtilities";
+import ApiError from "~/validation/ApiError";
+import ErrorTypes from "~/validation/ErrorTypes";
 import IAppRouter from "../IAppRouter";
 
 const router = express.Router();

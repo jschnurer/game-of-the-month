@@ -1,8 +1,8 @@
 import { Collection, Db, Document, Filter, MongoClient, ObjectId, Sort, WithId } from 'mongodb';
-import settings from '../settings/settings';
-import { jsonRegexReviver } from '../utilities/jsonUtilities';
-import ApiError from '../validation/ApiError';
-import ErrorTypes from '../validation/ErrorTypes';
+import settings from '~/settings/settings';
+import { jsonRegexReviver } from '~/utilities/jsonUtilities';
+import ApiError from '~/validation/ApiError';
+import ErrorTypes from '~/validation/ErrorTypes';
 
 /////////////////////////////////////////////////////////////////////////////////
 // Open a mongo client as soon as the app starts up and save it forever.

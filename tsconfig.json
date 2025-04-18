@@ -1,21 +1,13 @@
 {
+  "files": [],
   "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es6",
-    "moduleResolution": "node",
-    "sourceMap": true,
     "outDir": "dist",
-    "resolveJsonModule": true
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["src/*"]
+    }
   },
-  "exclude": [
-    "node_modules",
-    "client"
-  ],
-  "include": [
-    "src"
-  ],
-  "lib": [
-    "es2015"
+  "references": [
+    { "path": "./tsconfig.node.json" }
   ]
 }
