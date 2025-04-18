@@ -10,7 +10,7 @@ import IAppRouter from "../IAppRouter";
 const router = express.Router();
 
 // Ensure anyone accessing this router is an admin.
-router.use("*", (_, res, next) => {
+router.use("{*splat}", (_, res, next) => {
   if (!getCurrentUser(res).isAdmin) {
     throw new ApiError("Forbidden", ErrorTypes.Forbidden);
   }

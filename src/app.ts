@@ -6,6 +6,8 @@ import adminUsersRouter from "./routes/adminUsers/adminUsersRouter";
 import settings from "./settings/settings";
 import errorHandler from "./validation/errorHandler";
 import clubsRouter from "./routes/clubs/clubsRouter";
+import configureAuthMiddleware from "./auth/authMiddleware";
+import meRouter from "./routes/me/meRouter";
 
 const app = express();
 
@@ -15,13 +17,12 @@ app.use(cors());
 app.use(json());
 
 // Set up user authentication for all routes except the ones provided.
-// configureAuthMiddleware(app, ["/auth/login"]);
+configureAuthMiddleware(app, ["/auth/login"]);
 
 // Add all routers here.
 useRouter(adminUsersRouter);
+useRouter(meRouter)
 useRouter(clubsRouter);
-
-console.log("added routers");
 
 // All other GET requests not handled before will return our React app.
 app.get("/{*splat}", (_, res) => {

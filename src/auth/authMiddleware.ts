@@ -5,7 +5,7 @@ import getUserFromToken from "./tokenValidation";
 
 export default function configureAuthMiddleware(app: any, exposedRoutes: string[]) {
   // Check token unless it's the login route.
-  app.use("*", expressAsyncHandler(async (req, res, next) => {
+  app.use("{*splat}", expressAsyncHandler(async (req, res, next) => {
     const ix = exposedRoutes.indexOf(req.baseUrl.toLowerCase());
     const isExposedRoute = ix !== -1
       || (!req.baseUrl.toLowerCase().startsWith("/api")
