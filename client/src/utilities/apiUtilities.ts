@@ -63,5 +63,5 @@ export function encodeObjForUrl(obj: any) {
 
 /** Combines the base api url with the path you specify. */
 export function getApiUrl(relativePath: string) {
-  return `${settings.apiUrl}/${relativePath}`;
+  return `${settings.apiUrl}/${relativePath.startsWith("/") ? relativePath.substring(1) : relativePath}`;
 }

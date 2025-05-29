@@ -17,7 +17,7 @@ app.use(cors());
 app.use(json());
 
 // Set up user authentication for all routes except the ones provided.
-configureAuthMiddleware(app, ["/auth/login"]);
+configureAuthMiddleware(app, ["/api/me/login"]);
 
 // Add all routers here.
 useRouter(adminUsersRouter);

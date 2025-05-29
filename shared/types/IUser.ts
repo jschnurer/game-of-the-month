@@ -3,7 +3,7 @@ import IUserToken from "./IUserToken";
 export default interface IUser {
   _id: string,
   email: string,
-  name: string,
+  username: string,
   password: string,
   isAdmin: boolean,
   tokens?: IUserToken[],

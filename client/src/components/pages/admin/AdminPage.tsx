@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { getApiUrl } from "../../../settings/settings";
-import { throwIfResponseError } from "../../../utilities/apiUtilities";
+import { getApiUrl, throwIfResponseError } from "../../../utilities/apiUtilities";
 import { authPostJson } from "../../../utilities/authFetches";
 import AppForm from "../../common/form/AppForm";
 import FormRow from "../../common/form/form-row/FormRow";

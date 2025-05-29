@@ -5,10 +5,15 @@ import { useState } from "react";
 import { authPostJson } from "~/utilities/authFetches";
 import { getApiUrl, throwIfResponseError } from "~/utilities/apiUtilities";
 import settings from "~/settings/settings";
+import { useUser } from "~/contexts/UserContext";
+import { useNavigate } from "react-router-dom";
+import AppRoutes from "~/routing/AppRoutes";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const userCtx = useUser();
+  const nav = useNavigate();
 
   return (
     <>
@@ -49,13 +54,21 @@ export default function LoginPage() {
                 const loginResult = {
                   email: json.email,
                   token: json.token,
+                  username: json.username || "",
                 };
 
                 localStorage.setItem(settings.localStorageTokenName, loginResult.token);
 
-                // TODO: save loginResult into a context somehow to remember who the current user is.
+                userCtx.setUser({
+                  email: loginResult.email,
+                  username: json.username || "",
+                  token: json.token,
+                });
+
+                nav(AppRoutes.Dashboard);
               } catch (err) {
                 // TODO: handle error message.
+                alert("Failed to login: " + (err instanceof Error ? err.message : "Unknown error"));
               }
             }}
           >
