@@ -2,6 +2,13 @@ import fs from "fs";
 import path from "path";
 import ISettings from "./ISettings";
 
+// app.js (ESM)
+import { fileURLToPath } from 'url';
+
+// Rough equivalents of the old globals:
+const __filename = fileURLToPath(import.meta.url);
+export const __dirname  = path.dirname(__filename);
+
 const settingsPath = path.resolve(__dirname, "../src/local.settings.json");
 
 function loadSettings() {

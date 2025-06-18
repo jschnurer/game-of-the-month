@@ -6,6 +6,7 @@ import ApiError from "~/validation/ApiError";
 import ErrorTypes from "~/validation/ErrorTypes";
 import IAppRouter from "../IAppRouter";
 import IClub from "~/shared/types/IClub";
+import IClubGame from "~/shared/types/IClubGame";
 
 const collectionName = "clubs";
 
@@ -82,7 +83,7 @@ router.get("/:slug", expressAsyncHandler(async (req, res) => {
   });
 }));
 
-router.get("/manage/:id", expressAsyncHandler(async (req, res) => {
+router.get("/:id/manage", expressAsyncHandler(async (req, res) => {
   const _id = stringToObjectId(req.params.id);
 
   const mongoClubs = await getMongo(collectionName);
@@ -104,6 +105,40 @@ router.get("/manage/:id", expressAsyncHandler(async (req, res) => {
   }
 
   res.status(200).json(ownedClub);
+}));
+
+router.get("/:id/manage/games", expressAsyncHandler(async (req, res) => {
+  const _id = stringToObjectId(req.params.id);
+
+  const mongoClubs = await getMongo(collectionName);
+  const club = await mongoClubs.collection?.findOne({
+    _id,
+    deleted: { "$ne": true },
+  });
+
+  if (!club) {
+    throw new ApiError("Club not found.", ErrorTypes.NotFound);
+  }
+
+  validateOwnership(res, club as unknown as IClub);
+
+  const mongoGames = await getMongo("monthlyGames");
+
+  const now = new Date();
+  const currentYear = now.getUTCFullYear();
+  const currentMonth = now.getUTCMonth() + 1; // JS months are 0-indexed
+
+  const games = await mongoGames.collection?.find({
+    clubId: club._id,
+    deleted: { "$ne": true },
+    $or: [
+      { year: currentYear, month: { $gte: currentMonth } },
+      { year: { $gt: currentYear } }
+    ]
+  }).sort({ year: 1, month: 1 })
+    .toArray();
+
+  res.status(200).json(games as unknown as IClubGame[]);
 }));
 
 router.post("/", expressAsyncHandler(async (req, res) => {

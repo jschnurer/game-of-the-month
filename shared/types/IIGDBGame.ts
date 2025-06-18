@@ -1,11 +1,11 @@
-export interface IIGDBGame {
+export default interface IIGDBGame {
   id: number,
   cover: {
     id: number,
     url: string,
   },
   first_release_date: number,
-  first_release_platform: string,
+  first_release_platform?: string,
   name: string,
   release_dates: [
     {

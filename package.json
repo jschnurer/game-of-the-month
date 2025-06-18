@@ -7,7 +7,7 @@
   "scripts": {
     "start": "run-p --race start:server start:client",
     "start:client": "cd client && npm run dev",
-    "start:server": "tsup && node dist/app.cjs",
+    "start:server": "tsup && node dist/app.js",
     "build": "tsup",
     "lint": "eslint . ---ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"

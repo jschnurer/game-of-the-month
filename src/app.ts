@@ -8,6 +8,8 @@ import errorHandler from "./validation/errorHandler";
 import clubsRouter from "./routes/clubs/clubsRouter";
 import configureAuthMiddleware from "./auth/authMiddleware";
 import meRouter from "./routes/me/meRouter";
+import gamesRouter from "./routes/games/gamesRouter";
+import { __dirname } from "./settings/settings";
 
 const app = express();
 
@@ -23,6 +25,7 @@ configureAuthMiddleware(app, ["/api/me/login"]);
 useRouter(adminUsersRouter);
 useRouter(meRouter)
 useRouter(clubsRouter);
+useRouter(gamesRouter);
 
 // All other GET requests not handled before will return our React app.
 app.get("/{*splat}", (_, res) => {

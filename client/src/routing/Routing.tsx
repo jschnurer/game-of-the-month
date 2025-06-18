@@ -5,6 +5,7 @@ import AppRoutes from "./AppRoutes";
 import LoginPage from "~/components/pages/login/LoginPage";
 import ManageClub from "~/components/pages/club-mgmt/ManageClubPage";
 import Club from "~/components/pages/club/ClubPage";
+import ClubGameManagementPage from "~/components/pages/club-game-mgmt/ClubGameManagementPage";
 
 export default function Routing() {
   return (
@@ -38,6 +39,11 @@ export default function Routing() {
       <Route
         path={AppRoutes.Club.toString()}
         element={<Club />}
+      />
+
+      <Route
+        path={AppRoutes.ManageClubGames.toString()}
+        element={<ClubGameManagementPage />}
       />
 
       <Route

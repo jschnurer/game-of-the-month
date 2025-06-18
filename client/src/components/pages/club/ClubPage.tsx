@@ -53,8 +53,8 @@ const Club: React.FC = () => {
   if (!clubData) return <div>Club not found.</div>;
 
   const now = new Date();
-  const currentYear = now.getUTCFullYear();
-  const currentMonth = now.getUTCMonth() + 1;
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
 
   const currentGames = clubData.currentAndUpcomingGames.filter(
     game => game.year === currentYear && game.month === currentMonth
@@ -73,7 +73,7 @@ const Club: React.FC = () => {
       )}
 
       {isOwner && <Link to={getAppRoute(AppRoutes.ManageClub, { clubId: clubData.club._id })}>Edit Club Details</Link>}
-      {isOwner && <Link to={getAppRoute(AppRoutes.ManageClub, { clubId: clubData.club._id })}>Edit Game List</Link>}
+      {isOwner && <Link to={getAppRoute(AppRoutes.ManageClubGames, { clubId: clubData.club._id })}>Edit Game List</Link>}
 
       <GameList games={currentGames} thisOrNext="this" />
       <GameList games={nextMonthsGames} thisOrNext="next" />

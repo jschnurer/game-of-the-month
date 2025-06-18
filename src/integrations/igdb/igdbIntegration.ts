@@ -4,7 +4,7 @@ import { promisify } from 'util';
 import https from 'https';
 import { TwitchAuthTokenSingleton } from '../twitch/twitchIntegration';
 import settings from '~/settings/settings';
-import { IIGDBGame } from './IIGDBGame';
+import IIGDBGame from '~/shared/types/IIGDBGame';
 
 export async function searchGamesByName(name: string): Promise<IIGDBGame[]> {
   const token = await TwitchAuthTokenSingleton.getInstance().getToken();
@@ -18,7 +18,7 @@ export async function searchGamesByName(name: string): Promise<IIGDBGame[]> {
     method: 'POST',
     headers: {
       'Client-ID': settings.twitch.clientId,
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `Bearer ${token.access_token}`,
       'Accept': 'application/json',
     },
     body: query,
@@ -32,7 +32,7 @@ export async function searchGamesByName(name: string): Promise<IIGDBGame[]> {
 
   searchResults.forEach(game => {
     game.first_release_platform = game.release_dates
-      .find(rd => rd.date === game.first_release_date)
+      ?.find(rd => rd.date === game.first_release_date)
       ?.platform.name || 'Unknown';
   });
 

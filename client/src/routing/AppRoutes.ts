@@ -4,6 +4,7 @@ enum AppRoutes {
   Admin = "/admin",
   ManageClub = "/manage-club/:clubId",
   CreateClub = "/create-club",
+  ManageClubGames = "/manage-club/:clubId/games",
   Club = "/clubs/:slug",
 }
 

@@ -1,5 +1,6 @@
 import { Response } from "express";
-import { cloneDeep } from "lodash";
+import lodash from 'lodash';
+const { cloneDeep } = lodash;
 import ICurrentUser from "~/auth/ICurrentUser";
 import ApiError from "~/validation/ApiError";
 import ErrorTypes from "~/validation/ErrorTypes";

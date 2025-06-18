@@ -4,4 +4,6 @@ import './index.scss';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <App />
-)
+);
+
+export const portalRoot = (document.getElementById("portalRoot") as HTMLElement);

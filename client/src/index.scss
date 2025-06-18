@@ -19,21 +19,6 @@ body {
   gap: 1rem;
 }
 
-button {
-  padding: 0.5rem 1rem;
-  background-color: #DDD;
-  color: #222;
-  border: none;
-  border-radius: 0.25rem;
-  font-size: 1rem;
-  cursor: pointer;
-  
-  &:hover {
-    color: black;
-    background-color: white;
-  }
-}
-
 h1 {
   font-size: 2.5rem;
   margin-bottom: 0;
@@ -47,4 +32,71 @@ p {
 
 a {
   color: $color-highlight;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-highlight-hover;
+  }
+
+  &.neutral {
+    color: $color-neutral;
+
+    &:hover {
+      color: $color-neutral-hover;
+    }
+  }
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background-color: #DDD;
+  color: #222;
+  border: none;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  cursor: pointer;
+
+  &.primary {
+    background-color: $color-neutral;
+    color: #FFF;
+
+    &:hover {
+      background-color: $color-neutral-hover;
+    }
+  }
+
+  &.secondary {
+    background-color: #DDD;
+
+    &:hover {
+      background-color: #EEE;
+    }
+  }
+
+  &.tertiary {
+    background-color: transparent;
+    color: $color-neutral;
+
+    &:hover {
+      color: $color-neutral-hover;
+    }
+
+    &:disabled {
+      background-color: transparent;
+
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+
+  &:disabled {
+    background-color: #CCC;
+    color: #888;
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: #CCC;
+    }
+  }
 }

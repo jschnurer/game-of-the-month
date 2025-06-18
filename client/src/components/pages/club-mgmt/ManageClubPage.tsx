@@ -30,7 +30,7 @@ const ManageClub: React.FC = () => {
       const loader = async () => {
         try {
           const res = await authGetJson({
-            url: getApiUrl(`/clubs/manage/${clubId}`)
+            url: getApiUrl(`/clubs/${clubId}/manage`)
           });
 
           await throwIfResponseError(res);

@@ -1,0 +1,22 @@
+@import "../../../palette.scss";
+
+.gameHeader {
+  position: relative;
+
+  &::before {
+    content: "";
+    display: block;
+    height: 1px;
+    background: #ccc;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+  }
+
+  span, strong, em, b, i {
+    position: relative;
+    background: $color-main;
+    padding-right: 0.5em;
+  }
+}
