@@ -3,22 +3,39 @@ import { useParams } from "react-router-dom";
 import { getApiUrl, throwIfResponseError } from "~/utilities/apiUtilities";
 import { authGetJson } from "~/utilities/authFetches";
 import { useUser } from "~/contexts/UserContext";
+import styles from "./Club.module.scss";
 
-interface Club {
+interface IClub {
   id: string;
   name: string;
   description: string;
   owner: string;
 }
 
+interface IClubGame {
+  _id: string;
+  name: string;
+  platform: string;
+  description: string;
+  externalLink: string;
+  year: number;
+  month: number;
+  imageUrl: string;
+}
+
+interface IClubDashboardData {
+  club: IClub,
+  currentAndUpcomingGames: IClubGame[],
+}
+
 const Club: React.FC = () => {
   const { clubId } = useParams<{ clubId: string }>();
-  const [club, setClub] = useState<Club | null>(null);
+  const [clubData, setClubData] = useState<IClubDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const { user } = useUser();
-  const isOwner = club && user?.email === club.owner;
+  const isOwner = clubData && user?.email === clubData.club.owner;
 
   useEffect(() => {
     if (!clubId) {
@@ -35,7 +52,7 @@ const Club: React.FC = () => {
 
         await throwIfResponseError(res);
 
-        setClub(await res.json() as Club);
+        setClubData(await res.json() as IClubDashboardData);
       } catch (err) {
         setError("Failed to load club.");
       } finally {
@@ -48,22 +65,65 @@ const Club: React.FC = () => {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
-  if (!club) return <div>Club not found.</div>;
+  if (!clubData) return <div>Club not found.</div>;
+
+  const now = new Date();
+  const currentYear = now.getUTCFullYear();
+  const currentMonth = now.getUTCMonth() + 1;
+
+  const currentGames = clubData.currentAndUpcomingGames.filter(
+    game => game.year === currentYear && game.month === currentMonth
+  );
+
+  const nextMonthsGames = clubData.currentAndUpcomingGames.filter(
+    game => !(game.year === currentYear && game.month === currentMonth)
+  );
 
   return (
     <div className="col">
-      <h1 style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>{club.name}</h1>
+      <h1>{clubData.club.name}</h1>
       <div>
-        <strong>Owner:</strong> {club.owner}
+        <strong>Owner:</strong> {clubData.club.owner}
+
+        {isOwner && <button>Edit Club Data</button>}
       </div>
 
-      {!!club.description && (
-        <p style={{ fontSize: "1.2rem", marginBottom: "0.5rem" }}>{club.description}</p>
+      {!!clubData.club.description && (
+        <p>{clubData.club.description}</p>
       )}
 
+      {isOwner && <button>Edit Monthly Games</button>}
+
+      <GameList games={currentGames} thisOrNext="this" />
+      <GameList games={nextMonthsGames} thisOrNext="next" />
 
     </div>
   );
 };
 
 export default Club;
+
+function GameList(props: { games: IClubGame[], thisOrNext: "this" | "next" }) {
+  const { games, thisOrNext } = props;
+  return (
+    <>
+      <h2>{(thisOrNext === "this" ? "This" : "Next") + `Month's Game${games.length > 1 ? "s" : ""}`}</h2>
+
+      <div className={styles.gamesList}>
+        {games.length > 0 ? (
+          <p>
+            {games.map(game => (
+              <span
+                key={game._id}
+              >
+                {game.name} ({game.platform})
+              </span>
+            ))}
+          </p>
+        ) : (
+          <p>TBD</p>
+        )}
+      </div>
+    </>
+  );
+}

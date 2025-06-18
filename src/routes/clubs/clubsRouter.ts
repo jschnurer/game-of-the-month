@@ -30,12 +30,12 @@ router.get("/", expressAsyncHandler(async (_, res) => {
 }));
 
 router.get("/:slug", expressAsyncHandler(async (req, res) => {
-  const mongo = await getMongo(collectionName);
+  const mongoClubs = await getMongo(collectionName);
 
   const currUser = getCurrentUser(res);
   const userRegex = new RegExp(`^${currUser.email}$`, 'i');
 
-  const club = await mongo.collection?.findOne({
+  const club = await mongoClubs.collection?.findOne({
     slug: req.params.slug,
     deleted: { "$ne": true },
     $or: [
@@ -49,11 +49,37 @@ router.get("/:slug", expressAsyncHandler(async (req, res) => {
     throw new ApiError(`Club not found.`, ErrorTypes.NotFound);
   }
 
-  // TODO: Look up the past 3 months' games as well as the current month's
-  // and next months. Then add them to the club object and return the data.
-  
+  const mongoGames = await getMongo("monthlyGames");
 
-  res.status(200).json(club);
+  const utcNow = new Date(Date.UTC(
+    new Date().getUTCFullYear(),
+    new Date().getUTCMonth()
+  ));
+
+  const currentUtcYear = utcNow.getUTCFullYear();
+  const currentUtcMonthIndex = utcNow.getUTCMonth() + 1; // Months are 0-indexed in JS, so we add 1 to get the correct month number.
+  
+  const nextMonthData = {
+    year: currentUtcMonthIndex === 12 ? currentUtcYear + 1 : currentUtcYear, // If December, increment the year
+    month: currentUtcMonthIndex === 12 ? 1 : currentUtcMonthIndex + 1, // Next month
+  };
+
+  // Find the current month's games as well as next month's games.
+  const games = await mongoGames.collection?.find({
+    clubId: club._id,
+    deleted: { "$ne": true },
+    $or: [
+      { year: currentUtcYear, month: currentUtcMonthIndex },
+      { year: nextMonthData.year, month: nextMonthData.month },
+    ],
+  })
+  .sort({ year: 1, month: 1 }) // Order by earliest year/month first
+  .toArray();
+
+  res.status(200).json({
+    club,
+    currentAndUpcomingGames: games,
+  });
 }));
 
 router.post("/", expressAsyncHandler(async (req, res) => {

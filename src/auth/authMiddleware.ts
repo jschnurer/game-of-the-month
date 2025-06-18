@@ -20,12 +20,13 @@ export default function configureAuthMiddleware(app: any, exposedRoutes: string[
         throw new ApiError("Unauthorized.", ErrorTypes.Unauthorized);
       }
 
-      const token = authHeader.substring("Bearer ".length);
+      // Trim off "Bearer " from the header.
+      const token = authHeader.substring(7);
 
       const user = await getUserFromToken(token);
 
       if (!user) {
-        throw new ApiError("Unauthorized.", ErrorTypes.Unauthorized);
+        throw new ApiError("You must be logged in to access this resource.", ErrorTypes.Unauthorized);
       }
 
       // Provide the current user to all routes.

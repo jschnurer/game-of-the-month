@@ -40,6 +40,7 @@ export default function DashboardPage() {
               name={club.name}
               owner={club.owner}
               slug={club.slug}
+              key={club._id}
             />
           )}
         </div>

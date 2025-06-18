@@ -1,3 +1,5 @@
+@import "../../../palette.scss";
+
 .header {
   position: fixed;
   top: 0;
@@ -6,12 +8,18 @@
   height: 50px;
   display: flex;
   align-items: center;
-  background-color: rgb(124, 214, 255);
+  background-color: $color-neutral;
   padding: 0 1em;
+  justify-content: stretch;
 
   .title {
     font-size: 2em;
-    color: #5d0eab;
-    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    flex: 1;
+  }
+
+  .userInfo {
+    color: $color-highlight;
   }
 }

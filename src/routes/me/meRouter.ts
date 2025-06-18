@@ -63,9 +63,14 @@ router.post("/login", asyncHandler(async (req, res) => {
 router.get("/", asyncHandler(async (_, res) => {
   const currentUser = getCurrentUser(res);
 
+  if (!currentUser) {
+    throw new ApiError("You must be logged in to access this resource.", ErrorTypes.Unauthorized);
+  }
+
   res.json({
+    token: currentUser.currentToken,
     email: currentUser.email,
-    name: currentUser.name,
+    username: currentUser.username || "",
   });
 }));
 

@@ -8,6 +8,7 @@ import settings from "~/settings/settings";
 import { useUser } from "~/contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import AppRoutes from "~/routing/AppRoutes";
+import styles from "./LoginPage.module.scss";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -17,11 +18,11 @@ export default function LoginPage() {
 
   return (
     <>
-      <PageTitle
-        title="Login"
-      />
+      <AppForm className={styles.loginForm}>
+        <PageTitle
+          title="Login"
+        />
 
-      <AppForm>
         <FormRow
           label="Email"
         >
@@ -56,8 +57,6 @@ export default function LoginPage() {
                   token: json.token,
                   username: json.username || "",
                 };
-
-                localStorage.setItem(settings.localStorageTokenName, loginResult.token);
 
                 userCtx.setUser({
                   email: loginResult.email,
