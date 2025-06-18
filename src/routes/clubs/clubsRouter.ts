@@ -83,16 +83,14 @@ router.get("/:slug", expressAsyncHandler(async (req, res) => {
   });
 }));
 
-router.get("/:id/manage", expressAsyncHandler(async (req, res) => {
-  const _id = stringToObjectId(req.params.id);
-
+router.get("/:slug/manage", expressAsyncHandler(async (req, res) => {
   const mongoClubs = await getMongo(collectionName);
 
   const currUser = getCurrentUser(res);
   const userRegex = new RegExp(`^${currUser.email}$`, 'i');
 
   const ownedClub = await mongoClubs.collection?.findOne({
-    _id,
+    slug: req.params.slug,
     deleted: { "$ne": true },
   });
 
@@ -107,12 +105,10 @@ router.get("/:id/manage", expressAsyncHandler(async (req, res) => {
   res.status(200).json(ownedClub);
 }));
 
-router.get("/:id/manage/games", expressAsyncHandler(async (req, res) => {
-  const _id = stringToObjectId(req.params.id);
-
+router.get("/:slug/manage/games", expressAsyncHandler(async (req, res) => {
   const mongoClubs = await getMongo(collectionName);
   const club = await mongoClubs.collection?.findOne({
-    _id,
+    slug: req.params.slug,
     deleted: { "$ne": true },
   });
 
@@ -176,11 +172,10 @@ router.post("/", expressAsyncHandler(async (req, res) => {
   });
 }));
 
-router.put("/:id", expressAsyncHandler(async (req, res) => {
+router.put("/:slug", expressAsyncHandler(async (req, res) => {
   // Are you the owner of this item?
-  const _id = stringToObjectId(req.params.id);
   const mongo = await getMongo(collectionName);
-  const existingItem = await mongo.collection?.findOne({ _id }) as IClub | null;
+  const existingItem = await mongo.collection?.findOne({ slug: req.params.slug }) as IClub | null;
 
   if (!existingItem) {
     throw new ApiError(`Object not found for update.`, ErrorTypes.NotFound);
@@ -190,7 +185,9 @@ router.put("/:id", expressAsyncHandler(async (req, res) => {
 
   const club = validateAndGetClubFromRequest(req);
 
-  await mongo.collection?.updateOne({ _id }, {
+  const existingId = stringToObjectId(existingItem._id); // Ensure _id is valid
+
+  await mongo.collection?.updateOne({ _id: existingId }, {
     $set: {
       ...club,
     },

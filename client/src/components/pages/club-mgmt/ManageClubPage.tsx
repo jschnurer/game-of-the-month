@@ -17,20 +17,20 @@ const defaultClub: IClub = {
 };
 
 const ManageClub: React.FC = () => {
-  const { clubId } = useParams<{ clubId?: string }>();
+  const { slug } = useParams<{ slug?: string }>();
   const [club, setClub] = useState<IClub>(defaultClub);
-  const [loading, setLoading] = useState<boolean>(!!clubId);
+  const [loading, setLoading] = useState<boolean>(!!slug);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (clubId) {
-      console.log(clubId)
+    if (slug) {
+      console.log(slug)
       setLoading(true);
 
       const loader = async () => {
         try {
           const res = await authGetJson({
-            url: getApiUrl(`/clubs/${clubId}/manage`)
+            url: getApiUrl(`/clubs/${slug}/manage`)
           });
 
           await throwIfResponseError(res);
@@ -51,7 +51,7 @@ const ManageClub: React.FC = () => {
 
       loader();
     }
-  }, [clubId]);
+  }, [slug]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -70,8 +70,8 @@ const ManageClub: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const method = clubId ? 'PUT' : 'POST';
-    const url = clubId ? `/clubs/${clubId}` : '/clubs';
+    const method = slug ? 'PUT' : 'POST';
+    const url = slug ? `/clubs/${slug}` : '/clubs';
     try {
       const res = method === 'PUT'
         ? await authPutJson({

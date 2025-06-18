@@ -72,8 +72,8 @@ const Club: React.FC = () => {
         <p>{clubData.club.description}</p>
       )}
 
-      {isOwner && <Link to={getAppRoute(AppRoutes.ManageClub, { clubId: clubData.club._id })}>Edit Club Details</Link>}
-      {isOwner && <Link to={getAppRoute(AppRoutes.ManageClubGames, { clubId: clubData.club._id })}>Edit Game List</Link>}
+      {isOwner && <Link to={getAppRoute(AppRoutes.ManageClub, { slug: clubData.club.slug })}>Edit Club Details</Link>}
+      {isOwner && <Link to={getAppRoute(AppRoutes.ManageClubGames, { slug: clubData.club.slug })}>Edit Game List</Link>}
 
       <GameList games={currentGames} thisOrNext="this" />
       <GameList games={nextMonthsGames} thisOrNext="next" />

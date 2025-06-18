@@ -2,9 +2,9 @@ enum AppRoutes {
   Login = "/",
   Dashboard = "/dashboard",
   Admin = "/admin",
-  ManageClub = "/manage-club/:clubId",
+  ManageClub = "/manage-club/:slug",
   CreateClub = "/create-club",
-  ManageClubGames = "/manage-club/:clubId/games",
+  ManageClubGames = "/manage-club/:slug/games",
   Club = "/clubs/:slug",
 }
 

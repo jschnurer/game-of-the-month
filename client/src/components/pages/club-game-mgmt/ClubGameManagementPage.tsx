@@ -8,14 +8,14 @@ import styles from './ClubGameManagementPage.module.scss';
 import SearchGameModal from '~/components/common/search-game-modal/SearchGameModal';
 
 const ClubGameManagementPage: React.FC = () => {
-  const { clubId } = useParams<{ clubId: string }>();
+  const { slug } = useParams<{ slug: string }>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [clubGames, setClubGames] = useState<IClubGame[]>([]);
   const [schedulingData, setSchedulingData] = useState<{ year: number; month: number } | null>(null);
 
   useEffect(() => {
-    if (!clubId) {
+    if (!slug) {
       setError("Club ID is required.");
       setLoading(false);
       return;
@@ -25,7 +25,7 @@ const ClubGameManagementPage: React.FC = () => {
       setLoading(true);
 
       try {
-        const resp = await authGetJson({ url: getApiUrl(`/clubs/${clubId}/manage/games`) });
+        const resp = await authGetJson({ url: getApiUrl(`/clubs/${slug}/manage/games`) });
         await throwIfResponseError(resp);
         const games = await resp.json() as IClubGame[];
         setClubGames(games);
@@ -38,7 +38,7 @@ const ClubGameManagementPage: React.FC = () => {
     };
 
     fetchClubGames();
-  }, [clubId]);
+  }, [slug]);
 
   const now = new Date();
   const currentYear = now.getFullYear();
