@@ -3,8 +3,8 @@ import AdminPage from "../components/pages/admin/AdminPage";
 import DashboardPage from "../components/pages/dashboard/DashboardPage";
 import AppRoutes from "./AppRoutes";
 import LoginPage from "~/components/pages/login/LoginPage";
-import ManageClub from "~/components/pages/club-mgmt/ManageClub";
-import Club from "~/components/pages/club/Club";
+import ManageClub from "~/components/pages/club-mgmt/ManageClubPage";
+import Club from "~/components/pages/club/ClubPage";
 
 export default function Routing() {
   return (
@@ -27,6 +27,11 @@ export default function Routing() {
 
       <Route
         path={AppRoutes.CreateClub.toString()}
+        element={<ManageClub />}
+      />
+
+      <Route
+        path={AppRoutes.ManageClub.toString()}
         element={<ManageClub />}
       />
 

@@ -58,7 +58,7 @@ router.get("/:slug", expressAsyncHandler(async (req, res) => {
 
   const currentUtcYear = utcNow.getUTCFullYear();
   const currentUtcMonthIndex = utcNow.getUTCMonth() + 1; // Months are 0-indexed in JS, so we add 1 to get the correct month number.
-  
+
   const nextMonthData = {
     year: currentUtcMonthIndex === 12 ? currentUtcYear + 1 : currentUtcYear, // If December, increment the year
     month: currentUtcMonthIndex === 12 ? 1 : currentUtcMonthIndex + 1, // Next month
@@ -73,13 +73,37 @@ router.get("/:slug", expressAsyncHandler(async (req, res) => {
       { year: nextMonthData.year, month: nextMonthData.month },
     ],
   })
-  .sort({ year: 1, month: 1 }) // Order by earliest year/month first
-  .toArray();
+    .sort({ year: 1, month: 1 }) // Order by earliest year/month first
+    .toArray();
 
   res.status(200).json({
     club,
     currentAndUpcomingGames: games,
   });
+}));
+
+router.get("/manage/:id", expressAsyncHandler(async (req, res) => {
+  const _id = stringToObjectId(req.params.id);
+
+  const mongoClubs = await getMongo(collectionName);
+
+  const currUser = getCurrentUser(res);
+  const userRegex = new RegExp(`^${currUser.email}$`, 'i');
+
+  const ownedClub = await mongoClubs.collection?.findOne({
+    _id,
+    deleted: { "$ne": true },
+  });
+
+  if (!ownedClub) {
+    throw new ApiError("Club not found.", ErrorTypes.NotFound);
+  }
+
+  if (!userRegex.test(ownedClub.owner)) {
+    throw new ApiError("You are not authorized to manage this club.", ErrorTypes.Unauthorized);
+  }
+
+  res.status(200).json(ownedClub);
 }));
 
 router.post("/", expressAsyncHandler(async (req, res) => {
@@ -160,6 +184,7 @@ function validateAndGetClubFromRequest(req: Request): Partial<IClub> {
   return {
     name: req.body.name,
     accessType: req.body.accessType,
+    description: req.body.description || "",
   };
 }
 

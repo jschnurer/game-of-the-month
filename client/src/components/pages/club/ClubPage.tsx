@@ -1,27 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { getApiUrl, throwIfResponseError } from "~/utilities/apiUtilities";
 import { authGetJson } from "~/utilities/authFetches";
 import { useUser } from "~/contexts/UserContext";
-import styles from "./Club.module.scss";
-
-interface IClub {
-  id: string;
-  name: string;
-  description: string;
-  owner: string;
-}
-
-interface IClubGame {
-  _id: string;
-  name: string;
-  platform: string;
-  description: string;
-  externalLink: string;
-  year: number;
-  month: number;
-  imageUrl: string;
-}
+import styles from "./ClubPage.module.scss";
+import AppRoutes, { getAppRoute } from "~/routing/AppRoutes";
+import IClub from "~/shared/types/IClub";
+import IClubGame from "~/shared/types/IClubGame";
 
 interface IClubDashboardData {
   club: IClub,
@@ -29,7 +14,7 @@ interface IClubDashboardData {
 }
 
 const Club: React.FC = () => {
-  const { clubId } = useParams<{ clubId: string }>();
+  const { slug: clubSlug } = useParams<{ slug: string }>();
   const [clubData, setClubData] = useState<IClubDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +23,7 @@ const Club: React.FC = () => {
   const isOwner = clubData && user?.email === clubData.club.owner;
 
   useEffect(() => {
-    if (!clubId) {
+    if (!clubSlug) {
       setError("No club ID provided.");
       setLoading(false);
       return;
@@ -47,7 +32,7 @@ const Club: React.FC = () => {
     const fetchClub = async () => {
       try {
         const res = await authGetJson({
-          url: getApiUrl(`/clubs/${clubId}`)
+          url: getApiUrl(`/clubs/${clubSlug}`)
         });
 
         await throwIfResponseError(res);
@@ -61,7 +46,7 @@ const Club: React.FC = () => {
     };
 
     fetchClub();
-  }, [clubId]);
+  }, [clubSlug]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -82,17 +67,13 @@ const Club: React.FC = () => {
   return (
     <div className="col">
       <h1>{clubData.club.name}</h1>
-      <div>
-        <strong>Owner:</strong> {clubData.club.owner}
-
-        {isOwner && <button>Edit Club Data</button>}
-      </div>
 
       {!!clubData.club.description && (
         <p>{clubData.club.description}</p>
       )}
 
-      {isOwner && <button>Edit Monthly Games</button>}
+      {isOwner && <Link to={getAppRoute(AppRoutes.ManageClub, { clubId: clubData.club._id })}>Edit Club Details</Link>}
+      {isOwner && <Link to={getAppRoute(AppRoutes.ManageClub, { clubId: clubData.club._id })}>Edit Game List</Link>}
 
       <GameList games={currentGames} thisOrNext="this" />
       <GameList games={nextMonthsGames} thisOrNext="next" />
@@ -107,7 +88,7 @@ function GameList(props: { games: IClubGame[], thisOrNext: "this" | "next" }) {
   const { games, thisOrNext } = props;
   return (
     <>
-      <h2>{(thisOrNext === "this" ? "This" : "Next") + `Month's Game${games.length > 1 ? "s" : ""}`}</h2>
+      <h2>{(thisOrNext === "this" ? "This" : "Next") + ` Month's Game${games.length > 1 ? "s" : ""}`}</h2>
 
       <div className={styles.gamesList}>
         {games.length > 0 ? (

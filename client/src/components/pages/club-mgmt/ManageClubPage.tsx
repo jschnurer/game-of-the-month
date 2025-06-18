@@ -1,21 +1,19 @@
 import React, { useEffect, useState, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import styles from "./ManageClub.module.scss";
+import styles from "./ManageClubPage.module.scss";
 import { getApiUrl, throwIfResponseError } from '~/utilities/apiUtilities';
 import { authGetJson, authPostJson, authPutJson } from '~/utilities/authFetches';
 import AppRoutes, { getAppRoute } from '~/routing/AppRoutes';
-
-interface IClub {
-  id?: string;
-  name: string;
-  description: string;
-  accessType: 'Public' | 'InviteOnly';
-}
+import IClub from '~/shared/types/IClub';
 
 const defaultClub: IClub = {
   name: '',
   description: '',
   accessType: 'Public',
+  _id: '',
+  slug: '',
+  members: [],
+  owner: '',
 };
 
 const ManageClub: React.FC = () => {
@@ -26,27 +24,28 @@ const ManageClub: React.FC = () => {
 
   useEffect(() => {
     if (clubId) {
+      console.log(clubId)
       setLoading(true);
 
       const loader = async () => {
         try {
-          const res = await authGetJson({ url: getApiUrl(`/clubs/${clubId}`) });
+          const res = await authGetJson({
+            url: getApiUrl(`/clubs/manage/${clubId}`)
+          });
+
           await throwIfResponseError(res);
 
           const data = await res.json();
           if (data) {
-            setClub({
-              id: data._id,
-              name: data.name,
-              description: data.description || '',
-              accessType: data.accessType || 'Public',
-            });
+            setClub(data as IClub);
           } else {
             throw new Error('Club not found');
           }
         } catch (err) {
           alert('Error loading club: ' + (err instanceof Error ? err.message : 'Unknown error'));
-          navigate('/clubs');
+          navigate('/dashboard');
+        } finally {
+          setLoading(false);
         }
       };
 
@@ -87,7 +86,7 @@ const ManageClub: React.FC = () => {
 
       if (res.ok) {
         alert("Club saved successfully!");
-        navigate(getAppRoute(AppRoutes.Dashboard));
+        navigate(getAppRoute(AppRoutes.Club, { slug: club.slug }));
       }
     } catch (err) {
       alert('Error saving club: ' + (err instanceof Error ? err.message : 'Unknown error'));
@@ -118,6 +117,7 @@ const ManageClub: React.FC = () => {
             value={club.description}
             onChange={handleChange}
             required
+            rows={8}
           />
         </label>
       </div>

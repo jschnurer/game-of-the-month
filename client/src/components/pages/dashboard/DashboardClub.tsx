@@ -13,7 +13,7 @@ const DashboardClub: React.FC<DashboardClubProps> = ({ name, owner, slug }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(getAppRoute(AppRoutes.Club, { clubId: slug }));
+    navigate(getAppRoute(AppRoutes.Club, { slug }));
   };
 
   return (
