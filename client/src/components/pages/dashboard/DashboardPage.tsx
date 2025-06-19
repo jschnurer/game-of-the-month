@@ -6,9 +6,15 @@ import { getApiUrl } from "~/utilities/apiUtilities";
 import { useNavigate } from "react-router-dom";
 import AppRoutes, { getAppRoute } from "~/routing/AppRoutes";
 import DashboardClub from "./DashboardClub";
+import IClubGame from "~/shared/types/IClubGame";
+
+type IClubWithGames = {
+  club: IClub;
+  currentMonthGames: IClubGame[];
+}
 
 export default function DashboardPage() {
-  const [clubs, setClubs] = useState<IClub[]>([]);
+  const [clubsWithGames, setClubsWithGames] = useState<IClubWithGames[]>([]);
   const fetchValues = useMemo(() => ({ url: getApiUrl("/clubs") }), []);
   const nav = useNavigate();
 
@@ -20,7 +26,7 @@ export default function DashboardPage() {
 
       <LoadingDisplay
         fetchValues={fetchValues}
-        setResponse={setClubs}
+        setResponse={setClubsWithGames}
       >
         <div className="col">
           <button
@@ -29,18 +35,20 @@ export default function DashboardPage() {
             Create a Club
           </button>
 
-          {!clubs.length &&
+          {!clubsWithGames.length &&
             <div>
               You aren't a member in any Game of the Month clubs!
             </div>
           }
 
-          {clubs.map(club =>
+          {clubsWithGames.map(club =>
             <DashboardClub
-              name={club.name}
-              owner={club.owner}
-              slug={club.slug}
-              key={club._id}
+              name={club.club.name}
+              owner={club.club.owner}
+              slug={club.club.slug}
+              key={club.club._id}
+              description={club.club.description}
+              currentMonthGames={club.currentMonthGames}
             />
           )}
         </div>

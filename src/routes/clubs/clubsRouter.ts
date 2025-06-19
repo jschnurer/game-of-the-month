@@ -27,7 +27,33 @@ router.get("/", expressAsyncHandler(async (_, res) => {
     ],
   }).toArray();
 
-  res.status(200).json(clubs);
+  // For each club, look up the current month's games.
+  if (!clubs) {
+    res.json([]);
+    return;
+  }
+
+  const mongoGames = await getMongo("monthlyGames");
+  const utcNow = new Date(Date.UTC(
+    new Date().getUTCFullYear(),
+    new Date().getUTCMonth()
+  ));
+  const currentUtcYear = utcNow.getUTCFullYear();
+  const currentUtcMonthIndex = utcNow.getUTCMonth() + 1; // Months are 0-indexed in JS, so we add 1 to get the correct month number.
+
+  const games = await mongoGames.collection?.find({
+    clubId: { $in: clubs.map(club => club._id) },
+    deleted: { "$ne": true },
+    year: currentUtcYear,
+    month: currentUtcMonthIndex,
+  }).toArray();
+
+  const clubsWithGames = clubs.map(club => ({
+    club,
+    currentMonthGames: games?.filter(game => game.clubId.toString() === club._id.toString()) || [],
+  }));
+
+  res.json(clubsWithGames);
 }));
 
 router.get("/:slug", expressAsyncHandler(async (req, res) => {

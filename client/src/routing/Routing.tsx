@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import AdminPage from "../components/pages/admin/AdminPage";
 import DashboardPage from "../components/pages/dashboard/DashboardPage";
 import AppRoutes from "./AppRoutes";
@@ -44,6 +44,11 @@ export default function Routing() {
       <Route
         path={AppRoutes.ManageClubGames.toString()}
         element={<ClubGameManagementPage />}
+      />
+
+      <Route
+        path="/"
+        element={<Navigate to={AppRoutes.Dashboard} />}
       />
 
       <Route

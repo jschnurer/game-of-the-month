@@ -1,5 +1,5 @@
 enum AppRoutes {
-  Login = "/",
+  Login = "/login",
   Dashboard = "/dashboard",
   Admin = "/admin",
   ManageClub = "/manage-club/:slug",

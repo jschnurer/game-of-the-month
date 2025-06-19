@@ -24,7 +24,6 @@ const ManageClub: React.FC = () => {
 
   useEffect(() => {
     if (slug) {
-      console.log(slug)
       setLoading(true);
 
       const loader = async () => {

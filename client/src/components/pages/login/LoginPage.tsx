@@ -4,7 +4,6 @@ import FormRow from "~/components/common/form/form-row/FormRow";
 import { useState } from "react";
 import { authPostJson } from "~/utilities/authFetches";
 import { getApiUrl, throwIfResponseError } from "~/utilities/apiUtilities";
-import settings from "~/settings/settings";
 import { useUser } from "~/contexts/UserContext";
 import { useNavigate } from "react-router-dom";
 import AppRoutes from "~/routing/AppRoutes";

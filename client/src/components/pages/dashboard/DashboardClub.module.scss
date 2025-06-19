@@ -1,9 +1,11 @@
+@import "../../../palette.scss";
+
 .dashboardClub {
   display: flex;
   flex-direction: column;
   align-items: left;
   padding: 1rem;
-  background-color: #333;
+  background-color: $color-neutral;
   border-radius: 1rem;
   gap: .5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -14,13 +16,12 @@
     font-weight: bold;
   }
 
-  .owner {
-    font-size: 1.2rem;
-    color: #888;
+  .description {
+    font-size: 1rem;
     font-style: italic;
   }
 
   &:hover {
-    background-color: #444;
+    background-color: $color-neutral-hover;
   }
 }
