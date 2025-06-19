@@ -6,6 +6,7 @@ enum AppRoutes {
   CreateClub = "/create-club",
   ManageClubGames = "/manage-club/:slug/games",
   Club = "/clubs/:slug",
+  ClubGame = "/clubs/:slug/games/:gameId",
 }
 
 export default AppRoutes;

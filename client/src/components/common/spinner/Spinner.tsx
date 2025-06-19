@@ -1,5 +1,5 @@
-import styles from "./Spinner.module.scss";
-
 export default function Spinner() {
-  return <span className={styles.loader}></span>;
+  return (
+    <img src="/6-dots-scale-middle-white-36.svg" alt="Working..." />
+  );
 }

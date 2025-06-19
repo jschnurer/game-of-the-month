@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import { getMongo, stringToObjectId } from "~/persistence/mongo";
-import { getCurrentUser, throwBadRequestIfMissingFields } from "~/utilities/apiUtilities";
+import { getCurrentUser, stripDownToProps, throwBadRequestIfMissingFields } from "~/utilities/apiUtilities";
 import ApiError from "~/validation/ApiError";
 import ErrorTypes from "~/validation/ErrorTypes";
 import IAppRouter from "../IAppRouter";
@@ -132,17 +132,7 @@ router.get("/:slug/manage", expressAsyncHandler(async (req, res) => {
 }));
 
 router.get("/:slug/manage/games", expressAsyncHandler(async (req, res) => {
-  const mongoClubs = await getMongo(collectionName);
-  const club = await mongoClubs.collection?.findOne({
-    slug: req.params.slug,
-    deleted: { "$ne": true },
-  });
-
-  if (!club) {
-    throw new ApiError("Club not found.", ErrorTypes.NotFound);
-  }
-
-  validateOwnership(res, club as unknown as IClub);
+  const club = await lookupClubAndValidateIsOwner(req.params.slug, res);
 
   const mongoGames = await getMongo("monthlyGames");
 
@@ -161,6 +151,23 @@ router.get("/:slug/manage/games", expressAsyncHandler(async (req, res) => {
     .toArray();
 
   res.status(200).json(games as unknown as IClubGame[]);
+}));
+
+router.post("/:slug/manage/games", expressAsyncHandler(async (req, res) => {
+  const club = await lookupClubAndValidateIsOwner(req.params.slug, res);
+
+  // Save this game to the games list if it's valid.
+  const clubGame = validateClubGame(req);
+
+  clubGame.clubId = club._id;
+
+  const mongoGames = await getMongo("monthlyGames");
+  const result = await mongoGames.collection?.insertOne(clubGame as any);
+
+  res.status(201).json({
+    ...clubGame,
+    _id: result?.insertedId,
+  });
 }));
 
 router.post("/", expressAsyncHandler(async (req, res) => {
@@ -193,8 +200,8 @@ router.post("/", expressAsyncHandler(async (req, res) => {
   const result = await mongo.collection?.insertOne(club as any);
 
   res.status(201).json({
-    _id: result?.insertedId,
     ...club,
+    _id: result?.insertedId,
   });
 }));
 
@@ -253,4 +260,70 @@ function validateOwnership(res: Response, club: IClub) {
   if (!isCurrUserOwner) {
     throw new ApiError(`You do not have permission to perform updates on this item.`, ErrorTypes.Forbidden);
   }
+}
+
+async function lookupClubAndValidateIsOwner(slug: string, res: Response): Promise<IClub> {
+  const mongoClubs = await getMongo(collectionName);
+  const club = await mongoClubs.collection?.findOne({
+    slug: slug,
+    deleted: { "$ne": true },
+  });
+
+  if (!club) {
+    throw new ApiError("Club not found.", ErrorTypes.NotFound);
+  }
+
+  validateOwnership(res, club as unknown as IClub);
+
+  return club as unknown as IClub;
+}
+
+function validateClubGame(req: Request): Partial<IClubGame> {
+  throwBadRequestIfMissingFields(req.body, [
+    "name",
+    "platform",
+    "releaseYear",
+    "description",
+    "externalLink",
+    "year",
+    "month",
+    "imageUrl",
+  ]);
+
+  const clubGame = stripDownToProps({ ...req.body }, [
+    "name",
+    "platform",
+    "releaseYear",
+    "description",
+    "externalLink",
+    "year",
+    "month",
+    "imageUrl",
+  ]) as IClubGame;
+
+  clubGame.name = clubGame.name.toString();
+  clubGame.platform = clubGame.platform?.toString();
+  clubGame.releaseYear = clubGame.releaseYear ? parseInt(clubGame.releaseYear?.toString()) : undefined;
+  clubGame.description = clubGame.description?.toString();
+  clubGame.externalLink = clubGame.externalLink?.toString();
+  clubGame.year = parseInt(clubGame.year.toString());
+  clubGame.month = parseInt(clubGame.month.toString());
+  clubGame.imageUrl = clubGame.imageUrl?.toString();
+
+  const utcNow = new Date(Date.UTC(
+    new Date().getUTCFullYear(),
+    new Date().getUTCMonth()
+  ));
+  const currentUtcYear = utcNow.getUTCFullYear();
+  const currentUtcMonthIndex = utcNow.getUTCMonth() + 1; // Months are 0-indexed in JS, so we add 1 to get the correct month number.
+
+  if (clubGame.year < currentUtcYear) {
+    throw new ApiError("Invalid scheduled year. Year must be this year or later.", ErrorTypes.BadRequest);
+  }
+
+  if (clubGame.month < currentUtcMonthIndex) {
+    throw new ApiError("Invalid scheduled month. Month must be this month or later.", ErrorTypes.BadRequest);
+  }
+
+  return clubGame;
 }

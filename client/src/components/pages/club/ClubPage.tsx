@@ -7,6 +7,7 @@ import styles from "./ClubPage.module.scss";
 import AppRoutes, { getAppRoute } from "~/routing/AppRoutes";
 import IClub from "~/shared/types/IClub";
 import IClubGame from "~/shared/types/IClubGame";
+import GameDisplay from "~/components/common/game-display/GameDisplay";
 
 interface IClubDashboardData {
   club: IClub,
@@ -75,8 +76,8 @@ const Club: React.FC = () => {
       {isOwner && <Link to={getAppRoute(AppRoutes.ManageClub, { slug: clubData.club.slug })}>Edit Club Details</Link>}
       {isOwner && <Link to={getAppRoute(AppRoutes.ManageClubGames, { slug: clubData.club.slug })}>Edit Game List</Link>}
 
-      <GameList games={currentGames} thisOrNext="this" />
-      <GameList games={nextMonthsGames} thisOrNext="next" />
+      <GameList clubSlug={clubSlug ?? ""} games={currentGames} thisOrNext="this" />
+      <GameList clubSlug={clubSlug ?? ""} games={nextMonthsGames} thisOrNext="next" />
 
     </div>
   );
@@ -84,26 +85,25 @@ const Club: React.FC = () => {
 
 export default Club;
 
-function GameList(props: { games: IClubGame[], thisOrNext: "this" | "next" }) {
-  const { games, thisOrNext } = props;
+function GameList(props: { clubSlug: string, games: IClubGame[], thisOrNext: "this" | "next" }) {
+  const { clubSlug, games, thisOrNext } = props;
   return (
     <>
       <h2>{(thisOrNext === "this" ? "This" : "Next") + ` Month's Game${games.length > 1 ? "s" : ""}`}</h2>
 
       <div className={styles.gamesList}>
-        {games.length > 0 ? (
-          <p>
-            {games.map(game => (
-              <span
-                key={game._id}
-              >
-                {game.name} ({game.platform})
-              </span>
-            ))}
-          </p>
-        ) : (
-          <p>TBD</p>
-        )}
+        {games.length > 0 ?
+          games.map(game => (
+            <GameDisplay
+              key={game._id}
+              clubSlug={clubSlug}
+              goToGamePageOnTitleClick
+              game={game}
+            />
+          ))
+          : (
+            <p>TBD</p>
+          )}
       </div>
     </>
   );

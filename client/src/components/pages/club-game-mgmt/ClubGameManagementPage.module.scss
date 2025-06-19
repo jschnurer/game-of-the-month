@@ -1,5 +1,12 @@
 @import "../../../palette.scss";
 
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin: 1rem 0;
+}
+
 .gameHeader {
   position: relative;
 
@@ -14,7 +21,11 @@
     top: 50%;
   }
 
-  span, strong, em, b, i {
+  span,
+  strong,
+  em,
+  b,
+  i {
     position: relative;
     background: $color-main;
     padding-right: 0.5em;

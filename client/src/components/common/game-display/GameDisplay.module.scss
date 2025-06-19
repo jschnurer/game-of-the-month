@@ -1,0 +1,38 @@
+@import "../../../palette.scss";
+
+.gameDisplay {
+  border: 1px #BBB solid;
+  padding: .5rem;
+  display: flex;
+  gap: .5rem;
+  max-width: 600px;
+
+  img {
+    max-width: 300px;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+    display: block;
+    object-fit: contain;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    .gameName {
+      font-weight: bold;
+      font-size: 1.25rem;
+      color: $color-highlight;
+    }
+
+    .releaseData {
+      font-style: italic;
+    }
+
+    .description {
+      font-size: 1rem;
+    }
+  }
+}

@@ -19,6 +19,7 @@ const SearchGameModal: React.FC<SearchGameModalProps> = ({ onClose, onChooseGame
   const [error, setError] = useState<string | null>(null);
   const [clubGame, setClubGame] = useState<IClubGame>({
     _id: "",
+    clubId: "",
     description: "",
     name: "",
     platform: "",
@@ -52,6 +53,7 @@ const SearchGameModal: React.FC<SearchGameModalProps> = ({ onClose, onChooseGame
   const goToFinalizeStage = (game: IIGDBGame | null, platform?: string, releaseYear?: number) => {
     setClubGame({
       _id: "",
+      clubId: "",
       description: game?.summary || "",
       name: game?.name || "",
       platform: platform,

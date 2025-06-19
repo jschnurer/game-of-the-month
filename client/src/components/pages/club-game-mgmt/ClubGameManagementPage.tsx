@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import IClubGame from '~/shared/types/IClubGame';
 import { getApiUrl, throwIfResponseError } from '~/utilities/apiUtilities';
-import { authGetJson } from '~/utilities/authFetches';
+import { authGetJson, authPostJson } from '~/utilities/authFetches';
 import { getMonthName } from '~/utilities/dateUtilities';
 import styles from './ClubGameManagementPage.module.scss';
 import SearchGameModal from '~/components/common/search-game-modal/SearchGameModal';
+import Spinner from '~/components/common/spinner/Spinner';
+import AppRoutes, { getAppRoute } from '~/routing/AppRoutes';
+import ModalSpinner from '~/components/common/modal-spinner/ModalSpinner';
+import GameDisplay from '~/components/common/game-display/GameDisplay';
 
 const ClubGameManagementPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -13,6 +17,7 @@ const ClubGameManagementPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [clubGames, setClubGames] = useState<IClubGame[]>([]);
   const [schedulingData, setSchedulingData] = useState<{ year: number; month: number } | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (!slug) {
@@ -40,6 +45,31 @@ const ClubGameManagementPage: React.FC = () => {
     fetchClubGames();
   }, [slug]);
 
+  const scheduleGame = useCallback(async (game: IClubGame) => {
+    setIsSaving(true);
+
+    try {
+      const resp = await authPostJson({
+        url: getApiUrl(`/clubs/${slug}/manage/games`),
+        data: {
+          ...game,
+          year: schedulingData?.year,
+          month: schedulingData?.month,
+        },
+      });
+
+      await throwIfResponseError(resp);
+
+      const savedGame = (await resp.json()) as IClubGame;
+
+      setClubGames(prev => [...prev, savedGame]);
+    } catch (err) {
+      alert(`Failed to schedule game. Please refresh and try again.`);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [setIsSaving, setClubGames, schedulingData]);
+
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
@@ -56,7 +86,7 @@ const ClubGameManagementPage: React.FC = () => {
   }, [clubGames, currentYear, currentMonth]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Spinner />;
   } else if (error) {
     return <div>{error}</div>;
   }
@@ -65,38 +95,45 @@ const ClubGameManagementPage: React.FC = () => {
     <>
       <h1>Club Game Management</h1>
 
+      <Link to={getAppRoute(AppRoutes.Club, { slug: slug ?? "" })}>Back to Club</Link>
+
       {months.map(({ year, month, games }) => (
-        <div key={`${year}-${month.toString().padStart(2, '0')}`}>
-          <h3 className={styles.gameHeader}>
+        <div key={`${year}-${month.toString().padStart(2, '0')}`} className={styles.col}>
+          <h2 className={styles.gameHeader}>
             <span>{getMonthName(month)} {year}</span>
-          </h3>
-          <div>
+          </h2>
+
+          <div className="row">
             {games.length > 0 ? (
               games.map(game => (
-                <p key={game._id}>
-                  {game.name} ({game.platform})
-                </p>
+                <GameDisplay
+                  key={game._id}
+                  clubSlug={slug ?? ""}
+                  game={game}
+                  onEditClick={() => {
+                    alert("TODO: Manage existing game.");
+                  }}
+                />
               ))
             ) : (
               <p>
                 No games scheduled for {getMonthName(month)} {year}.
               </p>
             )}
-
-            <a onClick={() => setSchedulingData({ year, month })}>Schedule a new game</a>
           </div>
+
+          <a onClick={() => setSchedulingData({ year, month })}>Schedule a new game</a>
         </div>
       ))}
 
       {schedulingData &&
         <SearchGameModal
           onClose={() => setSchedulingData(null)}
-          onChooseGame={(game) => {
-            // TODO: Handle game selection logic.
-            
-          }}
+          onChooseGame={scheduleGame}
         />
       }
+
+      {isSaving && <ModalSpinner />}
     </>
   );
 };
