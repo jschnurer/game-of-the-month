@@ -232,6 +232,15 @@ router.put("/:slug", expressAsyncHandler(async (req, res) => {
   });
 }));
 
+router.get("/:slug/games/:gameId", expressAsyncHandler(async (req, res) => {
+  // TODO: Validate that one of the following is true:
+    // the user is the owner
+    // the user is a member
+    // or the group is public
+
+    throw new ApiError("Not yet implemented.", ErrorTypes.InternalError);
+}));
+
 const clubsRouter: IAppRouter = {
   baseRoute: "/clubs",
   router,

@@ -65,7 +65,6 @@ export default function LoginPage() {
 
                 nav(AppRoutes.Dashboard);
               } catch (err) {
-                // TODO: handle error message.
                 alert("Failed to login: " + (err instanceof Error ? err.message : "Unknown error"));
               }
             }}

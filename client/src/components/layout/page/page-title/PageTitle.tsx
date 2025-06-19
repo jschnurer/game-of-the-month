@@ -8,8 +8,8 @@ export default function PageTitle(props: IPageTitleProps) {
   document.title = props.title;
 
   return (
-    <h2 className={styles.pageTitle}>
+    <h1 className={styles.pageTitle}>
       {props.title}
-    </h2>
+    </h1>
   );
 }

@@ -5,6 +5,7 @@ import { getApiUrl, throwIfResponseError } from '~/utilities/apiUtilities';
 import { authGetJson, authPostJson, authPutJson } from '~/utilities/authFetches';
 import AppRoutes, { getAppRoute } from '~/routing/AppRoutes';
 import IClub from '~/shared/types/IClub';
+import PageTitle from '~/components/layout/page/page-title/PageTitle';
 
 const defaultClub: IClub = {
   name: '',
@@ -95,56 +96,62 @@ const ManageClub: React.FC = () => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <form onSubmit={handleSubmit} className={styles.manageClubForm}>
-      <div>
-        <label>
-          Club Name:
-          <input
-            type="text"
-            name="name"
-            value={club.name}
-            onChange={handleChange}
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Description:
-          <textarea
-            name="description"
-            value={club.description}
-            onChange={handleChange}
-            required
-            rows={8}
-          />
-        </label>
-      </div>
-      <div className={styles.accessType}>
-        <span>Access Type:</span>
-        <label>
-          <input
-            type="radio"
-            name="accessType"
-            value="Public"
-            checked={club.accessType === 'Public'}
-            onChange={handleAccessTypeChange}
-          />
-          Public
-        </label>
-        <label>
-          <input
-            type="radio"
-            name="accessType"
-            value="InviteOnly"
-            checked={club.accessType === 'InviteOnly'}
-            onChange={handleAccessTypeChange}
-          />
-          Invite Only
-        </label>
-      </div>
-      <button type="submit">Save</button>
-    </form>
+    <>
+      <PageTitle
+        title={club._id ? "Edit Club Details" : "New Club"}
+      />
+
+      <form onSubmit={handleSubmit} className={styles.manageClubForm}>
+        <div>
+          <label>
+            Club Name:
+            <input
+              type="text"
+              name="name"
+              value={club.name}
+              onChange={handleChange}
+              required
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            Description:
+            <textarea
+              name="description"
+              value={club.description}
+              onChange={handleChange}
+              required
+              rows={8}
+            />
+          </label>
+        </div>
+        <div className={styles.accessType}>
+          <span>Access Type:</span>
+          <label>
+            <input
+              type="radio"
+              name="accessType"
+              value="Public"
+              checked={club.accessType === 'Public'}
+              onChange={handleAccessTypeChange}
+            />
+            Public
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="accessType"
+              value="InviteOnly"
+              checked={club.accessType === 'InviteOnly'}
+              onChange={handleAccessTypeChange}
+            />
+            Invite Only
+          </label>
+        </div>
+        <button type="submit">Save</button>
+      </form>
+    </>
   );
 };
 

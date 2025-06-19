@@ -8,6 +8,7 @@ import AppRoutes, { getAppRoute } from "~/routing/AppRoutes";
 import IClub from "~/shared/types/IClub";
 import IClubGame from "~/shared/types/IClubGame";
 import GameDisplay from "~/components/common/game-display/GameDisplay";
+import PageTitle from "~/components/layout/page/page-title/PageTitle";
 
 interface IClubDashboardData {
   club: IClub,
@@ -67,7 +68,9 @@ const Club: React.FC = () => {
 
   return (
     <div className="col">
-      <h1>{clubData.club.name}</h1>
+      <PageTitle
+        title={clubData.club.name}
+      />
 
       {!!clubData.club.description && (
         <p>{clubData.club.description}</p>
